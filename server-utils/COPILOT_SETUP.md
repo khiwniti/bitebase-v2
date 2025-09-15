@@ -35,7 +35,7 @@ Update your `.env` file:
 # Enable Copilot API integration
 COPILOT_API_ENABLED=true
 COPILOT_API_URL=http://localhost:4141
-GITHUB_TOKEN=ghp_your_github_token_here
+GITHUB_TOKEN=your_github_token_here
 
 # Optional: Configure fallback providers
 OPENAI_API_KEY=sk-your-openai-key-here

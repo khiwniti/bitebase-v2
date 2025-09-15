@@ -357,7 +357,7 @@ SESSION_SECRET=your-secret-key
 # Copilot API Configuration
 COPILOT_API_ENABLED=true
 COPILOT_API_URL=http://copilot-api:4141
-GITHUB_TOKEN=ghp_your_token_here
+GITHUB_TOKEN=your_github_token_here
 COPILOT_RATE_LIMIT=60
 COPILOT_MAX_RETRIES=3
 COPILOT_TIMEOUT=30000
