@@ -8,7 +8,7 @@ set -e  # Exit on any error
 echo "🚀 Starting BiteBase Intelligence Production Deployment"
 
 # Configuration
-GITHUB_TOKEN="${GITHUB_TOKEN:-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}"
+GITHUB_TOKEN="${GITHUB_TOKEN:-your_github_token_here}"
 COPILOT_API_PORT="${COPILOT_API_PORT:-4141}"
 NEXT_APP_PORT="${NEXT_APP_PORT:-3001}"
 NODE_ENV="${NODE_ENV:-production}"
