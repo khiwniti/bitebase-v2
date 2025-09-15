@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -14,29 +14,23 @@ import { ChatSession, ChatMessage, MapState } from '@/types';
 import { DEFAULT_MAP_STATE } from '@/lib/mapUtils';
 import { ArrowLeft, Download, Settings, Loader2 } from 'lucide-react';
 
-export default function Chat() {
+export default function ChatSession() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pathname = usePathname();
+  const params = useParams();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const [mapState, setMapState] = useState<MapState>(DEFAULT_MAP_STATE);
   const [initialQuery, setInitialQuery] = useState<string | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [templateId, setTemplateId] = useState<string | null>(null);
-  const [currentSession, setCurrentSession] = useState<ChatSession | null>(null);
+  const sessionId = params.sessionId as string;
 
-  // Get initial query, template, and session ID from URL params
+  // Get initial query from URL params
   useEffect(() => {
     const query = searchParams.get('q');
-    const template = searchParams.get('template');
-    const sessionIdFromPath = pathname.split('/chat/')[1];
     setInitialQuery(query);
-    setTemplateId(template);
-    setSessionId(sessionIdFromPath || null);
-  }, [searchParams, pathname]);
+  }, [searchParams]);
 
   // Handle unauthorized access
   useEffect(() => {
@@ -67,49 +61,13 @@ export default function Chat() {
     retry: false,
   }) as { data: ChatMessage[], isLoading: boolean };
 
-  // Create new session if none exists
-  const createSessionMutation = useMutation({
-    mutationFn: async (title: string) => {
-      const response = await apiRequest('POST', '/api/chat/sessions', {
-        title,
-        location: 'San Francisco, CA',
-        mapState: JSON.stringify(DEFAULT_MAP_STATE),
-        status: 'active'
-      });
-      return response.json();
-    },
-    onSuccess: (newSession) => {
-      setCurrentSession(newSession);
-      router.push(`/chat/${newSession.id}`);
-      queryClient.invalidateQueries({ queryKey: ['/api/chat/sessions'] });
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Redirecting to home...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          router.push("/");
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: "Failed to create chat session",
-        variant: "destructive",
-      });
-    },
-  });
-
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      if (!currentSession?.id) throw new Error('No active session');
+      if (!sessionId) throw new Error('No active session');
       
       const response = await apiRequest('POST', '/api/chat/messages', {
-        sessionId: currentSession.id,
+        sessionId: sessionId,
         role: 'user',
         content
       });
@@ -117,7 +75,7 @@ export default function Chat() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ 
-        queryKey: ['/api/chat/sessions', currentSession?.id, 'messages'] 
+        queryKey: ['/api/chat/sessions', sessionId, 'messages'] 
       });
     },
     onError: (error) => {
@@ -143,9 +101,9 @@ export default function Chat() {
   // Generate report mutation
   const generateReportMutation = useMutation({
     mutationFn: async () => {
-      if (!currentSession?.id) throw new Error('No active session');
+      if (!sessionId) throw new Error('No active session');
       
-      const response = await apiRequest('POST', `/api/reports/generate/${currentSession.id}`);
+      const response = await apiRequest('POST', `/api/reports/generate/${sessionId}`);
       return response.json();
     },
     onSuccess: (report) => {
@@ -162,45 +120,33 @@ export default function Chat() {
 
   // Initialize session and map state
   useEffect(() => {
-    if (session) {
-      setCurrentSession(session as ChatSession);
-      if ((session as ChatSession).mapState) {
-        try {
-          const parsedMapState = JSON.parse((session as ChatSession).mapState as string);
-          setMapState(parsedMapState);
-        } catch (e) {
-          console.warn('Failed to parse mapState from session:', e);
-          setMapState(DEFAULT_MAP_STATE);
-        }
+    if (session && (session as ChatSession).mapState) {
+      try {
+        const parsedMapState = JSON.parse((session as ChatSession).mapState as string);
+        setMapState(parsedMapState);
+      } catch (e) {
+        console.warn('Failed to parse mapState from session:', e);
+        setMapState(DEFAULT_MAP_STATE);
       }
-    } else if (!sessionId && isAuthenticated && !authLoading) {
-      // Create new session if none specified
-      let title = 'New Market Research';
-      if (templateId) {
-        title = `Template Research: ${templateId}`;
-      } else if (initialQuery) {
-        title = `Research: ${initialQuery.slice(0, 50)}`;
-      }
-      createSessionMutation.mutate(title);
     }
-  }, [session, sessionId, isAuthenticated, authLoading, initialQuery, createSessionMutation, templateId]);
+  }, [session]);
 
   // Send initial query if provided
   useEffect(() => {
-    if (initialQuery && currentSession && messages.length === 0 && !sendMessageMutation.isPending) {
+    if (initialQuery && sessionId && messages.length === 0 && !sendMessageMutation.isPending) {
       sendMessageMutation.mutate(initialQuery);
       // Clear the query param
-      router.replace(`/chat/${currentSession.id}`);
+      router.replace(`/chat/${sessionId}`);
     }
-  }, [initialQuery, currentSession, messages.length, sendMessageMutation, router]);
+  }, [initialQuery, sessionId, messages.length, sendMessageMutation, router]);
 
   // Handle map updates
   const handleMapUpdate = (newMapState: MapState) => {
     setMapState(newMapState);
     
     // Update session with new map state
-    if (currentSession?.id) {
-      apiRequest('PATCH', `/api/chat/sessions/${currentSession.id}`, {
+    if (sessionId) {
+      apiRequest('PATCH', `/api/chat/sessions/${sessionId}`, {
         mapState: JSON.stringify(newMapState)
       }).catch(console.error);
     }
@@ -211,7 +157,7 @@ export default function Chat() {
     sendMessageMutation.mutate(content);
   };
 
-  if (authLoading || (!sessionId && createSessionMutation.isPending)) {
+  if (authLoading || sessionLoading) {
     return (
       <div className="h-screen flex items-center justify-center" data-testid="loading-screen">
         <div className="text-center">
@@ -222,7 +168,7 @@ export default function Chat() {
     );
   }
 
-  if (sessionError && !createSessionMutation.isPending) {
+  if (sessionError) {
     return (
       <div className="h-screen flex items-center justify-center" data-testid="error-screen">
         <div className="text-center max-w-md">
@@ -237,16 +183,18 @@ export default function Chat() {
     );
   }
 
-  if (!currentSession) {
+  if (!session) {
     return (
       <div className="h-screen flex items-center justify-center" data-testid="no-session">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Setting up your research session...</p>
+          <p className="text-muted-foreground">Loading session...</p>
         </div>
       </div>
     );
   }
+
+  const currentSession = session as ChatSession;
 
   return (
     <div className="h-screen flex flex-col" data-testid="chat-page">
@@ -299,7 +247,7 @@ export default function Chat() {
         {/* Chat Panel */}
         <div className="w-1/3 border-r border-border flex flex-col min-h-0">
           <ChatInterface
-            sessionId={currentSession.id}
+            sessionId={sessionId}
             messages={messages}
             onSendMessage={handleSendMessage}
             isLoading={sendMessageMutation.isPending}
@@ -309,7 +257,7 @@ export default function Chat() {
         {/* Map Canvas */}
         <div className="flex-1 min-h-0">
           <MapCanvas
-            sessionId={currentSession.id}
+            sessionId={sessionId}
             mapState={mapState}
             onMapUpdate={handleMapUpdate}
           />

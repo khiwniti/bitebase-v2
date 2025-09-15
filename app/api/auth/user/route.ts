@@ -11,10 +11,17 @@ export async function GET(request: NextRequest) {
     }
 
     const userId = user.claims.sub;
-    const userData = await storage.getUser(userId);
+    let userData = await storage.getUser(userId);
     
+    // If user not found in database, create them
     if (!userData) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      userData = await storage.upsertUser({
+        id: userId,
+        email: user.claims.email,
+        firstName: "Demo",
+        lastName: "User",
+        profileImageUrl: null,
+      });
     }
 
     // Ensure all data is JSON serializable

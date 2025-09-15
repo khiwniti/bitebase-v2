@@ -1,0 +1,74 @@
+{
+  "version": 2,
+  "name": "bitebase-intelligence",
+  "alias": ["beta.bitebase.app"],
+  "framework": "nextjs",
+  "regions": ["iad1", "sfo1", "lhr1"],
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "https://api-beta.bitebase.app",
+      "NEXT_PUBLIC_APP_URL": "https://beta.bitebase.app",
+      "NODE_ENV": "production"
+    }
+  },
+  "env": {
+    "OPENAI_API_KEY": "@openai-api-key",
+    "GITHUB_TOKEN": "@github-token",
+    "SESSION_SECRET": "@session-secret",
+    "NEXT_PUBLIC_API_URL": "https://api-beta.bitebase.app",
+    "NEXT_PUBLIC_APP_URL": "https://beta.bitebase.app"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://beta.bitebase.app"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/chat",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://api-beta.bitebase.app/:path*"
+    }
+  ]
+}

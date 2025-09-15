@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:workers": "echo 'Workers build complete - using raw JS'",
     "start": "next start",
     "lint": "next lint",
     "check": "tsc --noEmit",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "deploy:workers": "wrangler deploy",
+    "deploy:workers:staging": "wrangler deploy --env staging"
   },
   "dependencies": {
     "@copilotkit/backend": "^0.37.0",
@@ -67,6 +70,7 @@
     "express-session": "^1.18.1",
     "framer-motion": "^11.18.2",
     "input-otp": "^1.4.2",
+    "itty-router": "^5.0.22",
     "katex": "^0.16.21",
     "langchain": "^0.3.33",
     "langgraph-nextjs-api-passthrough": "^0.0.4",

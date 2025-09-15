@@ -1,0 +1,47 @@
+name = "bitebase-backend"
+main = "workers/index.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[env.production]
+name = "bitebase-backend-prod"
+
+[env.staging]
+name = "bitebase-backend-staging"
+
+# Environment variables for Cloudflare Workers
+[vars]
+NODE_ENV = "production"
+FRONTEND_URL = "https://beta.bitebase.app"
+API_BASE_URL = "https://api-beta.bitebase.app"
+
+# Secrets (to be set via wrangler secret)
+# OPENAI_API_KEY
+# DATABASE_URL
+# SESSION_SECRET
+# GITHUB_TOKEN
+
+# Worker configuration
+[build]
+command = "npm run build:workers"
+
+# Durable Objects (if needed for session management)
+[[durable_objects.bindings]]
+name = "SESSION_STORE"
+class_name = "SessionStore"
+
+# KV namespaces for caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = "bitebase-cache-prod"
+
+# D1 Database binding (alternative to external PostgreSQL)
+[[d1_databases]]
+binding = "DB"
+database_name = "bitebase-prod"
+database_id = "bitebase-d1-prod"
+
+# Routes for custom domain
+[[routes]]
+pattern = "api-beta.bitebase.app/*"
+zone_name = "bitebase.app"

@@ -216,10 +216,12 @@ export function useNetworkStatus(): {
   isOnline: boolean;
   isSlowConnection: boolean;
 } {
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [isSlowConnection, setIsSlowConnection] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
@@ -227,7 +229,7 @@ export function useNetworkStatus(): {
     window.addEventListener('offline', handleOffline);
 
     // Check connection speed
-    if ('connection' in navigator) {
+    if (typeof navigator !== 'undefined' && 'connection' in navigator) {
       const connection = (navigator as any).connection;
       const checkConnection = () => {
         setIsSlowConnection(

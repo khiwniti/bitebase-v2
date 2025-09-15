@@ -28,9 +28,8 @@ export async function authenticateRequest(request: NextRequest): Promise<DemoUse
     const demoUser = createDemoUser();
 
     // Ensure user exists in storage
-    try {
-      await storage.getUser(demoUser.claims.sub);
-    } catch (error) {
+    const existingUser = await storage.getUser(demoUser.claims.sub);
+    if (!existingUser) {
       // User doesn't exist, create them
       await storage.upsertUser({
         id: demoUser.claims.sub,
