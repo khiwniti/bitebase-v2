@@ -1,0 +1,81 @@
+
+> bitebase-intelligence-nextjs@1.0.0 dev
+> next dev
+
+ ⚠ Port 3000 is in use, trying 3001 instead.
+  ▲ Next.js 14.2.32
+  - Local:        http://localhost:3001
+  - Environme   Reload env: .env.local
+Terminated
+[?25h
+1s
+ ○ Compiling / ...
+ ✓ Compiled / in 16.5s (2728 modules)
+ ✓ Compiled in 1648ms (1354 modules)
+ GET / 200 in 120ms
+ ○ Compiling /settings ...
+ ✓ Compiled /settings in 5.1s (2768 modules)
+ GET /settings 200 in 5512ms
+ GET /settings 200 in 50ms
+ ○ Compiling /features ...
+ ✓ Compiled /features in 1053ms (2793 modules)
+ GET /features 200 in 1317ms
+ ○ Compiling /analytics ...
+ ✓ Compiled /analytics in 862ms (2810 modules)
+ GET /analytics 200 in 1026ms
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 5.1s (2908 modules)
+ GET /chat 200 in 5348ms
+ GET /chat 200 in 43ms
+ ○ Compiling /landing ...
+ ✓ Compiled /landing in 2.4s (2916 modules)
+ GET /landing 200 in 2568ms
+ ✓ Compiled in 4.9s (1453 modules)
+ ✓ Compiled in 1153ms (1453 modules)
+ ✓ Compiled in 1206ms (1453 modules)
+ ✓ Compiled in 1145ms (1453 modules)
+ ○ Compiling /pricing ...
+ ✓ Compiled /pricing in 2.1s (2803 modules)
+ GET /pricing 200 in 2528ms
+ GET /pricing 200 in 48ms
+ ✓ Compiled in 1083ms (1453 modules)
+ ✓ Compiled in 992ms (1453 modules)
+ ✓ Compiled in 741ms (1453 modules)
+ ✓ Compiled in 1048ms (1453 modules)
+ ⨯ ./lib/performance.ts
+Error: 
+  [31mx[0m Expected ',', got 'as'
+    ,-[[36;1;4m/teamspace/studios/this_studio/DinerMapInsights/lib/performance.ts[0m:81:1]
+ [2m81[0m |         callback(...args);
+ [2m82[0m |         lastRun.current = Date.now();
+ [2m83[0m |       }
+ [2m84[0m |     } as T,
+    : [31;1m      ^^[0m
+ [2m85[0m |     [callback, delay]
+ [2m86[0m |   );
+ [2m87[0m | }
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./lib/performance.ts
+./app/client-navigation.tsx
+ ✓ Compiled in 1119ms (1453 modules)
+ ✓ Compiled in 1009ms (1453 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/teamspace/studios/this_studio/DinerMapInsights/.next/cache/webpack/client-development/1.pack.gz_' -> '/teamspace/studios/this_studio/DinerMapInsights/.next/cache/webpack/client-development/1.pack.gz'
+ ○ Compiling /pricing ...
+ ✓ Compiled /pricing in 1219ms (1364 modules)
+ GET /pricing 200 in 1601ms
+ ✓ Compiled in 1563ms (1453 modules)
+ ✓ Compiled in 1384ms (1453 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/teamspace/studios/this_studio/DinerMapInsights/.next/cache/webpack/client-development/0.pack.gz_' -> '/teamspace/studios/this_studio/DinerMapInsights/.next/cache/webpack/client-development/0.pack.gz'
+ ✓ Compiled in 1367ms (1453 modules)
+ ✓ Compiled in 1050ms (1453 modules)
+   Reload env: .env.local
+ ✓ Compiled in 12s (1462 modules)
+ ✓ Compiled in 1387ms (1453 modules)
+ ✓ Compiled in 2.4s (1453 modules)
+Terminated
+[?25h
